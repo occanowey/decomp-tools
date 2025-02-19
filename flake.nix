@@ -29,5 +29,10 @@
     packages.${system} = with pkgs; {inherit splat m2c m2ctx objdiffWayland objdiffX11;};
 
     overlays.default = overlay;
+
+    templates.full = {
+      path = ./template;
+      description = "a nix devshell & devenv containing all default tools";
+    };
   };
 }
