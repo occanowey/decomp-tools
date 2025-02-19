@@ -2,25 +2,32 @@
   description = "decomp tools";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   outputs = {
     self,
     nixpkgs,
   }: let
+    overlay = self: super: {
+      splat = self.callPackage ./nix/pkgs/splat.nix {};
+      m2c = self.callPackage ./nix/pkgs/m2c.nix {};
+      m2ctx = self.callPackage ./nix/pkgs/m2ctx {};
+
+      objdiffWayland = self.callPackage ./nix/pkgs/objdiff.nix {enableWayland = true;};
+      objdiffX11 = self.callPackage ./nix/pkgs/objdiff.nix {enableX11 = true;};
+    };
+
     system = "x86_64-linux";
-    pkgs = import nixpkgs {inherit system;};
-  in rec {
+    pkgs = import nixpkgs {
+      inherit system;
+      overlays = [overlay];
+    };
+  in {
     formatter.${system} = pkgs.alejandra;
 
-    packages.${system} = {
-      splat = pkgs.callPackage ./nix/pkgs/splat.nix {};
-      m2c = pkgs.callPackage ./nix/pkgs/m2c.nix {};
-      m2ctx = pkgs.callPackage ./nix/pkgs/m2ctx {};
+    packages.${system} = with pkgs; {inherit splat m2c m2ctx objdiffWayland objdiffX11;};
 
-      objdiffWayland = pkgs.callPackage ./nix/pkgs/objdiff.nix {enableWayland = true;};
-      objdiffX11 = pkgs.callPackage ./nix/pkgs/objdiff.nix {enableX11 = true;};
-    };
+    overlays.default = overlay;
   };
 }
