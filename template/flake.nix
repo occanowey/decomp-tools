@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     decomp-tools = {
-      url = "github:";
+      url = "github:occanowey/decomp-tools";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
