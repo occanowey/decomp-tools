@@ -13,6 +13,7 @@
       splat = self.callPackage ./nix/pkgs/splat.nix {};
       m2c = self.callPackage ./nix/pkgs/m2c.nix {};
       m2ctx = self.callPackage ./nix/pkgs/m2ctx {};
+      asm-differ = self.callPackage ./nix/pkgs/asm-differ.nix {};
 
       objdiffWayland = self.callPackage ./nix/pkgs/objdiff.nix {enableWayland = true;};
       objdiffX11 = self.callPackage ./nix/pkgs/objdiff.nix {enableX11 = true;};
@@ -26,7 +27,7 @@
   in {
     formatter.${system} = pkgs.alejandra;
 
-    packages.${system} = with pkgs; {inherit splat m2c m2ctx objdiffWayland objdiffX11;};
+    packages.${system} = with pkgs; {inherit splat m2c m2ctx asm-differ objdiffWayland objdiffX11;};
 
     overlays.default = overlay;
 
