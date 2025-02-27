@@ -4,8 +4,8 @@
   rustPlatform,
   fetchFromGitHub,
   pkg-config,
+  autoPatchelfHook,
   fontconfig,
-  makeWrapper,
   libxkbcommon,
   libGL,
   enableWayland ? false,
@@ -27,17 +27,16 @@ rustPlatform.buildRustPackage rec {
   useFetchCargoVendor = true;
   cargoHash = "sha256-AGtVOhmldzBKUCxDETWjjyDcYS/cZUokJEpbpllpVdQ=";
 
-  nativeBuildInputs = [pkg-config makeWrapper];
+  nativeBuildInputs = [pkg-config autoPatchelfHook];
   buildInputs = [fontconfig];
 
-  postFixup = let
+  fixupPhase = let
     libPath = lib.makeLibraryPath (
       [libxkbcommon libGL]
-      ++ lib.optionals enableWayland [wayland]
+      ++ (lib.optionals enableWayland [wayland])
       ++ (with xorg; lib.optionals enableX11 [libXcursor libXext libXrandr libXi])
     );
   in ''
-    wrapProgram $out/bin/objdiff \
-      --prefix LD_LIBRARY_PATH : "${libPath}"
+    patchelf --add-rpath "${libPath}" $out/bin/objdiff
   '';
 }
